@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Android Store</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0a0f1e;
+      --surface: #111827;
+      --surface2: #1a2235;
+      --border: rgba(255,255,255,0.07);
+      --accent: #3ddc84;
+      --accent2: #00b4d8;
+      --accent3: #ff6b6b;
+      --accent4: #ffd166;
+      --text: #f0f4ff;
+      --muted: #8a96b0;
+      --card-radius: 20px;
+      --pill-radius: 100px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ---- SCROLLBAR ---- */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 4px; }
+
+    /* ---- NAVBAR ---- */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px;
+      height: 68px;
+      background: rgba(10,15,30,0.85);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .nav-logo span { color: var(--accent); }
+    .logo-icon {
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg, var(--accent), #00c96f);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+    }
+
+    .nav-links {
+      display: flex; gap: 32px; list-style: none;
+    }
+    .nav-links a {
+      color: var(--muted); text-decoration: none; font-size: 0.92rem; font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--text); }
+
+    .nav-actions { display: flex; align-items: center; gap: 12px; }
+
+    .search-bar {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--pill-radius);
+      padding: 8px 16px;
+      width: 220px;
+      transition: border-color 0.2s, width 0.3s;
+    }
+    .search-bar:focus-within { border-color: var(--accent); width: 270px; }
+    .search-bar input {
+      background: none; border: none; outline: none;
+      color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.88rem;
+      width: 100%;
+    }
+    .search-bar input::placeholder { color: var(--muted); }
+    .search-icon { color: var(--muted); font-size: 0.85rem; }
+
+    .btn-install {
+      background: var(--accent);
+      color: #0a0f1e;
+      border: none; border-radius: var(--pill-radius);
+      padding: 9px 20px; font-weight: 700; font-size: 0.85rem;
+      cursor: pointer; font-family: 'DM Sans', sans-serif;
+      transition: transform 0.15s, box-shadow 0.2s;
+    }
+    .btn-install:hover { transform: translateY(-1px); box-shadow: 0 4px 18px rgba(61,220,132,0.35); }
+
+    /* ---- HERO ---- */
+    .hero {
+      padding: 140px 40px 60px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+      align-items: center;
+      max-width: 1300px; margin: 0 auto;
+    }
+
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(61,220,132,0.1);
+      border: 1px solid rgba(61,220,132,0.25);
+      border-radius: var(--pill-radius);
+      padding: 5px 14px; font-size: 0.78rem; font-weight: 600;
+      color: var(--accent); letter-spacing: 0.4px;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.4rem, 4vw, 3.8rem);
+      font-weight: 800; line-height: 1.1;
+      letter-spacing: -1px;
+      margin-bottom: 20px;
+    }
+    .hero h1 em { font-style: normal; color: var(--accent); }
+
+    .hero p {
+      color: var(--muted); line-height: 1.7; font-size: 1rem;
+      max-width: 440px; margin-bottom: 32px;
+    }
+
+    .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #0a0f1e;
+      border: none; border-radius: var(--pill-radius);
+      padding: 13px 28px; font-weight: 700; font-size: 0.95rem;
+      cursor: pointer; font-family: 'DM Sans', sans-serif;
+      transition: transform 0.15s, box-shadow 0.2s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(61,220,132,0.4); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: var(--pill-radius);
+      padding: 13px 28px; font-weight: 600; font-size: 0.95rem;
+      cursor: pointer; font-family: 'DM Sans', sans-serif;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .btn-outline:hover { border-color: rgba(255,255,255,0.25); background: var(--surface); }
+
+    .hero-stats {
+      display: flex; gap: 32px; margin-top: 40px;
+    }
+    .stat { }
+    .stat strong {
+      font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800;
+      display: block;
+    }
+    .stat span { color: var(--muted); font-size: 0.82rem; }
+
+    /* Hero Visual */
+    .hero-visual {
+      position: relative; display: flex; justify-content: center; align-items: center;
+    }
+    .phone-mockup {
+      width: 240px; height: 490px;
+      background: var(--surface);
+      border-radius: 36px;
+      border: 2px solid var(--border);
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
+      animation: float 4s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+    .phone-notch {
+      width: 90px; height: 22px; background: #0a0f1e;
+      border-radius: 0 0 14px 14px;
+      margin: 0 auto;
+    }
+    .phone-screen { padding: 10px 14px; }
+    .phone-app-row {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+      margin-bottom: 10px;
+    }
+    .phone-app {
+      aspect-ratio: 1; border-radius: 14px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+    .phone-app-label { font-size: 0.45rem; color: var(--muted); margin-top: 2px; }
+
+    .glow-orb {
+      position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.35; pointer-events: none;
+    }
+    .glow1 { width: 300px; height: 300px; background: var(--accent); top: -60px; right: -60px; }
+    .glow2 { width: 200px; height: 200px; background: var(--accent2); bottom: 0; left: -40px; }
+
+    /* Floating cards */
+    .float-card {
+      position: absolute;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-size: 0.75rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      white-space: nowrap;
+    }
+    .float-card.left { left: -80px; top: 30%; animation: float 5s 1s ease-in-out infinite; }
+    .float-card.right { right: -80px; bottom: 28%; animation: float 5s 0.5s ease-in-out infinite; }
+    .float-card .fc-label { color: var(--muted); font-size: 0.68rem; margin-bottom: 2px; }
+    .float-card .fc-val { font-weight: 700; font-size: 0.88rem; }
+    .fc-green { color: var(--accent); }
+    .fc-star { color: var(--accent4); }
+
+    /* ---- SECTION WRAP ---- */
+    .section { max-width: 1300px; margin: 0 auto; padding: 0 40px 70px; }
+    .section-header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      margin-bottom: 28px;
+    }
+    .section-title {
+      font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800;
+    }
+    .see-all {
+      color: var(--accent); font-size: 0.85rem; font-weight: 600;
+      text-decoration: none; cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .see-all:hover { opacity: 0.7; }
+
+    /* ---- CATEGORY PILLS ---- */
+    .categories {
+      max-width: 1300px; margin: 0 auto;
+      padding: 0 40px 40px;
+      display: flex; gap: 10px; flex-wrap: wrap;
+    }
+    .cat-pill {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--pill-radius);
+      padding: 8px 18px;
+      font-size: 0.85rem; font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .cat-pill:hover, .cat-pill.active {
+      background: var(--accent); color: #0a0f1e;
+      border-color: var(--accent); font-weight: 700;
+    }
+
+    /* ---- APP CARDS ---- */
+    .apps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 18px;
+    }
+
+    .app-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--card-radius);
+      padding: 20px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      position: relative; overflow: hidden;
+    }
+    .app-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(61,220,132,0.04), transparent);
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .app-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.4); border-color: rgba(255,255,255,0.12); }
+    .app-card:hover::before { opacity: 1; }
+
+    .app-icon {
+      width: 62px; height: 62px; border-radius: 16px;
+      margin-bottom: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.7rem;
+    }
+    .app-name { font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; margin-bottom: 3px; }
+    .app-category { color: var(--muted); font-size: 0.78rem; margin-bottom: 10px; }
+
+    .app-meta { display: flex; align-items: center; justify-content: space-between; }
+    .app-rating { display: flex; align-items: center; gap: 4px; color: var(--accent4); font-size: 0.78rem; font-weight: 600; }
+    .app-size { color: var(--muted); font-size: 0.75rem; }
+    .app-install-btn {
+      background: rgba(61,220,132,0.12);
+      color: var(--accent);
+      border: 1px solid rgba(61,220,132,0.25);
+      border-radius: var(--pill-radius);
+      padding: 5px 14px; font-size: 0.78rem; font-weight: 700;
+      cursor: pointer; font-family: 'DM Sans', sans-serif;
+      transition: background 0.2s, transform 0.15s;
+      margin-top: 12px; width: 100%;
+    }
+    .app-install-btn:hover { background: rgba(61,220,132,0.22); transform: scale(1.02); }
+    .app-install-btn.installed { background: rgba(61,220,132,0.06); color: var(--muted); border-color: transparent; cursor: default; }
+    .app-install-btn.installed:hover { transform: none; }
+
+    /* ---- FEATURED BANNER ---- */
+    .featured-banner {
+      max-width: 1300px; margin: 0 auto;
+      padding: 0 40px 60px;
+    }
+    .featured-card {
+      border-radius: 24px;
+      padding: 48px;
+      display: grid; grid-template-columns: 1fr auto;
+      gap: 40px; align-items: center;
+      position: relative; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .featured-card.blue-theme {
+      background: linear-gradient(135deg, #0d1f3c 0%, #0a2748 50%, #091a35 100%);
+    }
+    .featured-card::after {
+      content: ''; position: absolute;
+      width: 400px; height: 400px;
+      border-radius: 50%; filter: blur(80px); opacity: 0.2;
+      top: -100px; right: -100px;
+      background: var(--accent2);
+    }
+    .featured-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(0,180,216,0.15);
+      border: 1px solid rgba(0,180,216,0.3);
+      border-radius: var(--pill-radius);
+      padding: 4px 12px; font-size: 0.75rem; font-weight: 600;
+      color: var(--accent2); margin-bottom: 14px;
+    }
+    .featured-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem; font-weight: 800;
+      line-height: 1.15; margin-bottom: 10px;
+    }
+    .featured-desc { color: var(--muted); font-size: 0.9rem; line-height: 1.6; max-width: 380px; margin-bottom: 22px; }
+    .featured-icon-wrap {
+      width: 120px; height: 120px;
+      border-radius: 28px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3.5rem;
+      position: relative; z-index: 1;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    /* ---- HORIZONTAL SCROLL APPS ---- */
+    .apps-row {
+      display: flex; gap: 14px; overflow-x: auto; padding-bottom: 8px;
+      scrollbar-width: none;
+    }
+    .apps-row::-webkit-scrollbar { display: none; }
+
+    .app-card-h {
+      min-width: 180px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--card-radius);
+      padding: 16px;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s;
+      flex-shrink: 0;
+    }
+    .app-card-h:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.12); }
+
+    /* ---- TOP CHARTS ---- */
+    .top-list { display: flex; flex-direction: column; gap: 10px; }
+    .top-item {
+      display: flex; align-items: center; gap: 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 18px;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .top-item:hover { transform: translateX(4px); border-color: rgba(255,255,255,0.12); }
+    .top-rank {
+      font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 800;
+      color: var(--muted); width: 28px; text-align: center; flex-shrink: 0;
+    }
+    .top-rank.gold { color: var(--accent4); }
+    .top-rank.silver { color: #9aa8c4; }
+    .top-rank.bronze { color: #b87333; }
+    .top-icon {
+      width: 46px; height: 46px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; flex-shrink: 0;
+    }
+    .top-info { flex: 1; }
+    .top-name { font-weight: 700; font-size: 0.9rem; margin-bottom: 2px; }
+    .top-cat { color: var(--muted); font-size: 0.75rem; }
+    .top-action {
+      background: rgba(61,220,132,0.1);
+      color: var(--accent);
+      border: 1px solid rgba(61,220,132,0.2);
+      border-radius: var(--pill-radius);
+      padding: 5px 14px; font-size: 0.78rem; font-weight: 700;
+      cursor: pointer; font-family: 'DM Sans', sans-serif;
+      transition: background 0.2s;
+    }
+    .top-action:hover { background: rgba(61,220,132,0.2); }
+
+    /* ---- TWO COL ---- */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+
+    /* ---- EDITOR'S PICK ---- */
+    .editors-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 18px;
+    }
+    .editor-card {
+      border-radius: var(--card-radius);
+      padding: 28px;
+      position: relative; overflow: hidden; cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: transform 0.2s, box-shadow 0.2s;
+      min-height: 160px;
+      display: flex; flex-direction: column; justify-content: flex-end;
+    }
+    .editor-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(0,0,0,0.5); }
+    .editor-bg { position: absolute; inset: 0; opacity: 0.18; font-size: 7rem; display: flex; align-items: center; justify-content: flex-end; padding-right: 16px; pointer-events: none; }
+    .editor-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(255,255,255,0.12); border-radius: var(--pill-radius);
+      padding: 3px 10px; font-size: 0.68rem; font-weight: 700;
+      margin-bottom: 8px; width: fit-content;
+      letter-spacing: 0.5px;
+    }
+    .editor-name { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; }
+    .editor-desc { font-size: 0.78rem; color: rgba(255,255,255,0.6); line-height: 1.5; }
+
+    /* ---- FOOTER ---- */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px;
+      max-width: 1300px; margin: 0 auto;
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 40px;
+    }
+    .footer-brand { }
+    .footer-logo {
+      display: flex; align-items: center; gap: 8px;
+      font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 800;
+      margin-bottom: 12px;
+    }
+    .footer-logo span { color: var(--accent); }
+    .footer-desc { color: var(--muted); font-size: 0.82rem; line-height: 1.7; max-width: 240px; }
+    .footer-col h4 {
+      font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700;
+      margin-bottom: 14px; color: var(--text);
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 8px; }
+    .footer-col ul li a { color: var(--muted); font-size: 0.82rem; text-decoration: none; transition: color 0.2s; }
+    .footer-col ul li a:hover { color: var(--text); }
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding: 20px 40px;
+      max-width: 1300px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+      color: var(--muted); font-size: 0.78rem;
+    }
+
+    /* ---- MODAL ---- */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.25s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 36px;
+      width: 90%; max-width: 480px;
+      transform: translateY(20px); transition: transform 0.25s;
+      position: relative;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .modal-close {
+      position: absolute; top: 16px; right: 16px;
+      background: var(--surface2); border: none; color: var(--muted);
+      width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+      font-size: 1rem; display: flex; align-items: center; justify-content: center;
+      transition: color 0.2s;
+    }
+    .modal-close:hover { color: var(--text); }
+    .modal-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+    .modal-icon {
+      width: 72px; height: 72px; border-radius: 20px;
+      display: flex; align-items: center; justify-content: center; font-size: 2rem;
+    }
+    .modal-title { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; }
+    .modal-cat { color: var(--muted); font-size: 0.82rem; }
+    .modal-stats { display: flex; gap: 20px; margin: 16px 0; }
+    .modal-stat { text-align: center; }
+    .modal-stat strong { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 800; display: block; }
+    .modal-stat span { color: var(--muted); font-size: 0.72rem; }
+    .modal-desc { color: var(--muted); font-size: 0.87rem; line-height: 1.7; margin-bottom: 24px; }
+    .modal-install {
+      width: 100%;
+      background: var(--accent); color: #0a0f1e;
+      border: none; border-radius: var(--pill-radius);
+      padding: 14px; font-size: 1rem; font-weight: 700;
+      cursor: pointer; font-family: 'DM Sans', sans-serif;
+      transition: transform 0.15s, box-shadow 0.2s;
+    }
+    .modal-install:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(61,220,132,0.4); }
+    .modal-install.installed { background: var(--surface2); color: var(--muted); cursor: default; }
+    .modal-install.installed:hover { transform: none; box-shadow: none; }
+
+    /* ---- TOAST ---- */
+    .toast {
+      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--pill-radius); padding: 12px 24px;
+      font-size: 0.88rem; font-weight: 600;
+      display: flex; align-items: center; gap: 8px;
+      z-index: 300; transition: transform 0.3s ease;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast-icon { color: var(--accent); }
+
+    /* ---- BANNER SLIDER ---- */
+    .banner-slider { max-width: 1300px; margin: 0 auto; padding: 0 40px 50px; }
+    .banner-track {
+      display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory;
+      scrollbar-width: none; padding-bottom: 4px;
+    }
+    .banner-track::-webkit-scrollbar { display: none; }
+    .banner-slide {
+      min-width: 400px; border-radius: 20px; padding: 30px;
+      scroll-snap-align: start; flex-shrink: 0;
+      display: flex; align-items: center; gap: 20px;
+      border: 1px solid rgba(255,255,255,0.06);
+      cursor: pointer; transition: transform 0.2s;
+      position: relative; overflow: hidden;
+    }
+    .banner-slide:hover { transform: translateY(-2px); }
+    .banner-slide-icon { font-size: 3rem; flex-shrink: 0; }
+    .banner-slide-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; }
+    .banner-slide-desc { font-size: 0.78rem; color: rgba(255,255,255,0.6); line-height: 1.5; }
+    .banner-slide-badge {
+      position: absolute; top: 14px; right: 14px;
+      background: rgba(255,255,255,0.12); border-radius: var(--pill-radius);
+      padding: 3px 10px; font-size: 0.68rem; font-weight: 700;
+    }
+
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 900px) {
+      nav { padding: 0 20px; }
+      .nav-links { display: none; }
+      .hero { grid-template-columns: 1fr; padding: 110px 20px 40px; gap: 40px; }
+      .hero-visual { display: none; }
+      .section { padding: 0 20px 50px; }
+      .categories { padding: 0 20px 30px; }
+      .two-col { grid-template-columns: 1fr; }
+      footer { grid-template-columns: 1fr 1fr; padding: 30px 20px; }
+      .footer-brand { grid-column: 1 / -1; }
+      .footer-bottom { padding: 20px; flex-direction: column; gap: 8px; }
+      .featured-banner { padding: 0 20px 40px; }
+      .banner-slider { padding: 0 20px 40px; }
+      .featured-card { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav>
+  <div class="nav-logo">
+    <div class="logo-icon">🤖</div>
+    Android<span>Store</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#" class="active">Home</a></li>
+    <li><a href="#">Games</a></li>
+    <li><a href="#">Apps</a></li>
+    <li><a href="#">Books</a></li>
+    <li><a href="#">Movies</a></li>
+  </ul>
+  <div class="nav-actions">
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Search apps, games..." id="searchInput" oninput="filterApps(this.value)"/>
+    </div>
+    <button class="btn-install" onclick="showToast('👤 Sign In coming soon!')">Sign In</button>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div>
+    <div class="hero-tag">✨ New: Android Store 2.0</div>
+    <h1>Discover <em>Amazing</em> Apps for Every Moment</h1>
+    <p>Millions of apps, games, and digital content. Find exactly what you need, curated just for you.</p>
+    <div class="hero-cta">
+      <button class="btn-primary" onclick="scrollToApps()">Explore Apps</button>
+      <button class="btn-outline" onclick="showToast('🎮 Games section coming soon!')">Browse Games</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><strong>3.5M+</strong><span>Total Apps</span></div>
+      <div class="stat"><strong>1B+</strong><span>Downloads</span></div>
+      <div class="stat"><strong>190+</strong><span>Countries</span></div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="glow-orb glow1"></div>
+    <div class="glow-orb glow2"></div>
+    <div class="float-card left">
+      <div class="fc-label">Today's Top Pick</div>
+      <div class="fc-val fc-green">🏆 Productivity #1</div>
+    </div>
+    <div class="phone-mockup">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="phone-app-row">
+          <div class="phone-app" style="background:#1a2a1a;">📷</div>
+          <div class="phone-app" style="background:#1a1a2a;">🎵</div>
+          <div class="phone-app" style="background:#2a1a1a;">🎮</div>
+          <div class="phone-app" style="background:#1a2a2a;">💬</div>
+          <div class="phone-app" style="background:#2a2a1a;">📰</div>
+          <div class="phone-app" style="background:#1a1f2e;">🗺️</div>
+          <div class="phone-app" style="background:#251a2a;">🛒</div>
+          <div class="phone-app" style="background:#1a2520;">💪</div>
+          <div class="phone-app" style="background:#2a1f1a;">📚</div>
+        </div>
+      </div>
+    </div>
+    <div class="float-card right">
+      <div class="fc-label">User Rating</div>
+      <div class="fc-val fc-star">★ 4.8 / 5.0</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CATEGORY PILLS ===== -->
+<div class="categories">
+  <button class="cat-pill active" onclick="filterCategory('All', this)">🌐 All</button>
+  <button class="cat-pill" onclick="filterCategory('Social', this)">💬 Social</button>
+  <button class="cat-pill" onclick="filterCategory('Productivity', this)">⚡ Productivity</button>
+  <button class="cat-pill" onclick="filterCategory('Gaming', this)">🎮 Gaming</button>
+  <button class="cat-pill" onclick="filterCategory('Music', this)">🎵 Music</button>
+  <button class="cat-pill" onclick="filterCategory('Photo', this)">📷 Photo</button>
+  <button class="cat-pill" onclick="filterCategory('Finance', this)">💰 Finance</button>
+  <button class="cat-pill" onclick="filterCategory('Health', this)">💪 Health</button>
+  <button class="cat-pill" onclick="filterCategory('News', this)">📰 News</button>
+  <button class="cat-pill" onclick="filterCategory('Education', this)">📚 Education</button>
+  <button class="cat-pill" onclick="filterCategory('Travel', this)">✈️ Travel</button>
+</div>
+
+<!-- ===== FEATURED BANNER ===== -->
+<div class="featured-banner">
+  <div class="featured-card blue-theme">
+    <div>
+      <div class="featured-tag">⭐ App of the Week</div>
+      <div class="featured-title">Nova Launcher Pro<br/>— Redesign Your World</div>
+      <div class="featured-desc">The most customizable Android launcher. Redesign your home screen with powerful widgets, gestures, and unlimited personalization.</div>
+      <button class="btn-primary" onclick="openModal(featuredApp)">Get it Free →</button>
+    </div>
+    <div class="featured-icon-wrap">🚀</div>
+  </div>
+</div>
+
+<!-- ===== BANNER PROMOS ===== -->
+<div class="banner-slider">
+  <div class="section-header" style="max-width:100%;padding:0;margin-bottom:16px;">
+    <div class="section-title">🔥 Hot Deals</div>
+  </div>
+  <div class="banner-track">
+    <div class="banner-slide" style="background:linear-gradient(135deg,#1a0a2e,#2a0a3e);" onclick="showToast('🎮 Deal applied!')">
+      <div class="banner-slide-icon">🎮</div>
+      <div><div class="banner-slide-title">Epic Games Bundle</div><div class="banner-slide-desc">5 premium games, one low price. Limited time offer.</div></div>
+      <div class="banner-slide-badge">50% OFF</div>
+    </div>
+    <div class="banner-slide" style="background:linear-gradient(135deg,#0a1a2e,#0a2a1e);" onclick="showToast('🎵 Music unlocked!')">
+      <div class="banner-slide-icon">🎵</div>
+      <div><div class="banner-slide-title">Music All Access</div><div class="banner-slide-desc">3 months of premium music streaming, free.</div></div>
+      <div class="banner-slide-badge">FREE</div>
+    </div>
+    <div class="banner-slide" style="background:linear-gradient(135deg,#2e1a0a,#1e0a0a);" onclick="showToast('📚 Books unlocked!')">
+      <div class="banner-slide-icon">📚</div>
+      <div><div class="banner-slide-title">Books & Audiobooks</div><div class="banner-slide-desc">Unlimited reading. Your first month on us.</div></div>
+      <div class="banner-slide-badge">1 MONTH FREE</div>
+    </div>
+    <div class="banner-slide" style="background:linear-gradient(135deg,#0a2e1a,#0a1e2e);" onclick="showToast('💪 Plan started!')">
+      <div class="banner-slide-icon">💪</div>
+      <div><div class="banner-slide-title">Health & Fitness Pack</div><div class="banner-slide-desc">Top fitness apps bundled together at one price.</div></div>
+      <div class="banner-slide-badge">NEW</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TOP APPS SECTION ===== -->
+<div class="section" id="appsSection">
+  <div class="section-header">
+    <div class="section-title">🌟 Featured Apps</div>
+    <a class="see-all" onclick="showToast('All apps view coming soon!')">See All →</a>
+  </div>
+  <div class="apps-grid" id="appsGrid">
+    <!-- Populated by JS -->
+  </div>
+</div>
+
+<!-- ===== TOP CHARTS + EDITORS PICK ===== -->
+<div class="section">
+  <div class="two-col">
+    <!-- Top Charts -->
+    <div>
+      <div class="section-header">
+        <div class="section-title">📈 Top Charts</div>
+        <a class="see-all" onclick="showToast('Full charts coming soon!')">See All →</a>
+      </div>
+      <div class="top-list" id="topList"></div>
+    </div>
+    <!-- Editors Pick -->
+    <div>
+      <div class="section-header">
+        <div class="section-title">🎖️ Editor's Picks</div>
+        <a class="see-all" onclick="showToast('More picks coming soon!')">See All →</a>
+      </div>
+      <div class="editors-grid" id="editorsGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== NEW ARRIVALS ===== -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-title">🆕 New Arrivals</div>
+    <a class="see-all" onclick="showToast('New arrivals page coming soon!')">See All →</a>
+  </div>
+  <div class="apps-row" id="newArrivals"></div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-brand">
+    <div class="footer-logo">
+      <div class="logo-icon" style="width:28px;height:28px;font-size:0.9rem;border-radius:8px;">🤖</div>
+      Android<span>Store</span>
+    </div>
+    <p class="footer-desc">The ultimate app marketplace. Discover, download, and enjoy millions of apps for your Android device.</p>
+  </div>
+  <div class="footer-col">
+    <h4>Explore</h4>
+    <ul>
+      <li><a href="#">Apps</a></li>
+      <li><a href="#">Games</a></li>
+      <li><a href="#">Movies</a></li>
+      <li><a href="#">Books</a></li>
+      <li><a href="#">Music</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Account</h4>
+    <ul>
+      <li><a href="#">Sign In</a></li>
+      <li><a href="#">My Library</a></li>
+      <li><a href="#">Wishlist</a></li>
+      <li><a href="#">Purchase History</a></li>
+      <li><a href="#">Subscriptions</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Support</h4>
+    <ul>
+      <li><a href="#">Help Center</a></li>
+      <li><a href="#">Privacy Policy</a></li>
+      <li><a href="#">Terms of Service</a></li>
+      <li><a href="#">Developer Portal</a></li>
+      <li><a href="#">Contact Us</a></li>
+    </ul>
+  </div>
+</footer>
+<div class="footer-bottom">
+  <span>© 2025 Android Store. All rights reserved.</span>
+  <span>Made with ❤️ for Android users</span>
+</div>
+
+<!-- ===== MODAL ===== -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modalBox">
+    <button class="modal-close" onclick="closeModalBtn()">✕</button>
+    <div class="modal-header">
+      <div class="modal-icon" id="mIcon"></div>
+      <div><div class="modal-title" id="mName"></div><div class="modal-cat" id="mCat"></div></div>
+    </div>
+    <div class="modal-stats">
+      <div class="modal-stat"><strong id="mRating"></strong><span>Rating</span></div>
+      <div class="modal-stat"><strong id="mDownloads"></strong><span>Downloads</span></div>
+      <div class="modal-stat"><strong id="mSize"></strong><span>Size</span></div>
+      <div class="modal-stat"><strong id="mAge"></strong><span>Age Rating</span></div>
+    </div>
+    <div class="modal-desc" id="mDesc"></div>
+    <button class="modal-install" id="mInstallBtn" onclick="installFromModal()">Install</button>
+  </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast"><span class="toast-icon">✅</span><span id="toastMsg"></span></div>
+
+<script>
+  // ===== DATA =====
+  const apps = [
+    { id:1, name:'WhatsApp', cat:'Social', icon:'💬', color:'#0d2b1a', rating:'4.7', downloads:'5B+', size:'50MB', age:'4+', desc:'Stay connected with friends and family through messages, voice, and video calls. End-to-end encrypted for your privacy.' },
+    { id:2, name:'Spotify', cat:'Music', icon:'🎵', color:'#0d1f0d', rating:'4.6', downloads:'1B+', size:'35MB', age:'12+', desc:'Listen to millions of songs, podcasts, and audiobooks. Create playlists and discover new music tailored to your taste.' },
+    { id:3, name:'Camera Pro', cat:'Photo', icon:'📷', color:'#1a1a2e', rating:'4.8', downloads:'200M+', size:'82MB', age:'4+', desc:'Professional-grade camera app with manual controls, RAW support, and stunning filters. Turn every shot into a masterpiece.' },
+    { id:4, name:'Clash Royale', cat:'Gaming', icon:'⚔️', color:'#2a1a0a', rating:'4.5', downloads:'500M+', size:'180MB', age:'9+', desc:'A real-time multiplayer game featuring your favorite Clash characters. Build your deck and destroy opponents\' towers!' },
+    { id:5, name:'Notion', cat:'Productivity', icon:'📝', color:'#1a1a1a', rating:'4.6', downloads:'100M+', size:'68MB', age:'4+', desc:'Your all-in-one workspace. Notes, tasks, databases, and collaboration — everything you need to stay organized.' },
+    { id:6, name:'Duolingo', cat:'Education', icon:'🦉', color:'#1a2a0a', rating:'4.7', downloads:'500M+', size:'52MB', age:'4+', desc:'Learn a new language for free! Fun, bite-sized lessons in over 40 languages. Practice speaking, reading, and writing daily.' },
+    { id:7, name:'Google Maps', cat:'Travel', icon:'🗺️', color:'#0a1a2a', rating:'4.4', downloads:'10B+', size:'120MB', age:'4+', desc:'Navigate your world with real-time traffic, turn-by-turn directions, and millions of local businesses. Explore the world.' },
+    { id:8, name:'Robinhood', cat:'Finance', icon:'💹', color:'#0a2a1a', rating:'4.2', downloads:'50M+', size:'75MB', age:'17+', desc:'Invest in stocks, ETFs, crypto and more — commission-free. Build your portfolio with the power of modern investing.' },
+    { id:9, name:'MyFitnessPal', cat:'Health', icon:'💪', color:'#1a2a1f', rating:'4.6', downloads:'200M+', size:'90MB', age:'4+', desc:'Track your diet, log workouts, and reach your fitness goals. The world\'s largest nutrition and fitness database.' },
+    { id:10, name:'BBC News', cat:'News', icon:'📰', color:'#1a0a0a', rating:'4.3', downloads:'100M+', size:'45MB', age:'12+', desc:'Stay informed with breaking news, analysis, and live reporting from around the world. Trusted journalism since 1922.' },
+    { id:11, name:'Instagram', cat:'Social', icon:'📸', color:'#2a0a1a', rating:'4.5', downloads:'5B+', size:'95MB', age:'12+', desc:'Share photos and videos, explore Reels, and connect with friends and creators worldwide. Your visual story starts here.' },
+    { id:12, name:'Canva', cat:'Photo', icon:'🎨', color:'#1a0a2a', rating:'4.8', downloads:'500M+', size:'110MB', age:'4+', desc:'Design anything — social posts, presentations, videos, logos, and more. Thousands of templates for every occasion.' },
+  ];
+
+  const topApps = [
+    { name:'TikTok', cat:'Social', icon:'🎵', color:'#1a0a1a' },
+    { name:'Minecraft', cat:'Gaming', icon:'⛏️', color:'#0a1a0a' },
+    { name:'Netflix', cat:'Entertainment', icon:'🎬', color:'#1a0a0a' },
+    { name:'Zoom', cat:'Productivity', icon:'📹', color:'#0a0a1a' },
+    { name:'Headspace', cat:'Health', icon:'🧘', color:'#0a1a1a' },
+  ];
+
+  const editorPicks = [
+    { name:'Medito', desc:'Free meditation & mindfulness', icon:'🧘', bg:'linear-gradient(135deg,#0a1a1a,#0a2525)' },
+    { name:'Obsidian', desc:'Knowledge base & note-taking', icon:'💎', bg:'linear-gradient(135deg,#1a0a2a,#250a35)' },
+    { name:'Signal', desc:'Private, secure messaging', icon:'🔒', bg:'linear-gradient(135deg,#0a1a0a,#0a2515)' },
+  ];
+
+  const newArrivalsData = [
+    { name:'Gemini AI', cat:'Productivity', icon:'✨', color:'#1a1a2a' },
+    { name:'Threads', cat:'Social', icon:'🧵', color:'#1a1a1a' },
+    { name:'Perplexity', cat:'Education', icon:'🔮', color:'#0a1a2a' },
+    { name:'Locket Widget', cat:'Social', icon:'💝', color:'#2a0a0a' },
+    { name:'Arc Search', cat:'Productivity', icon:'🌐', color:'#0a0a2a' },
+    { name:'BeReal', cat:'Social', icon:'📲', color:'#1a2a0a' },
+  ];
+
+  const featuredApp = { id:99, name:'Nova Launcher Pro', cat:'Productivity', icon:'🚀', color:'#0a1a2a', rating:'4.9', downloads:'100M+', size:'15MB', age:'4+', desc:'The most powerful and customizable Android launcher. Redesign your home screen with stunning widgets, icon packs, gestures, and themes. Make your Android truly yours.' };
+
+  // ===== STATE =====
+  const installed = new Set();
+  let currentApp = null;
+
+  // ===== RENDER =====
+  function renderApps(list) {
+    const grid = document.getElementById('appsGrid');
+    grid.innerHTML = list.map(app => `
+      <div class="app-card" onclick="openModal(apps.find(a=>a.id===${app.id}))">
+        <div class="app-icon" style="background:${app.color}">${app.icon}</div>
+        <div class="app-name">${app.name}</div>
+        <div class="app-category">${app.cat}</div>
+        <div class="app-meta">
+          <div class="app-rating">★ ${app.rating}</div>
+          <div class="app-size">${app.size}</div>
+        </div>
+        <button class="app-install-btn${installed.has(app.id) ? ' installed' : ''}"
+          onclick="event.stopPropagation(); installApp(${app.id}, this)">
+          ${installed.has(app.id) ? '✓ Installed' : 'Install'}
+        </button>
+      </div>
+    `).join('');
+  }
+
+  function renderTopList() {
+    const ranks = ['gold','silver','bronze','',''];
+    document.getElementById('topList').innerHTML = topApps.map((app, i) => `
+      <div class="top-item">
+        <div class="top-rank ${ranks[i]}">${i+1}</div>
+        <div class="top-icon" style="background:${app.color}">${app.icon}</div>
+        <div class="top-info">
+          <div class="top-name">${app.name}</div>
+          <div class="top-cat">${app.cat}</div>
+        </div>
+        <button class="top-action" onclick="showToast('⬇️ ${app.name} installing...')">Get</button>
+      </div>
+    `).join('');
+  }
+
+  function renderEditors() {
+    document.getElementById('editorsGrid').innerHTML = editorPicks.map(p => `
+      <div class="editor-card" style="background:${p.bg}" onclick="showToast('🎖️ ${p.name} opened!')">
+        <div class="editor-bg">${p.icon}</div>
+        <div class="editor-badge">✦ EDITOR'S PICK</div>
+        <div class="editor-name">${p.name}</div>
+        <div class="editor-desc">${p.desc}</div>
+      </div>
+    `).join('');
+  }
+
+  function renderNewArrivals() {
+    document.getElementById('newArrivals').innerHTML = newArrivalsData.map(app => `
+      <div class="app-card-h" onclick="showToast('🆕 ${app.name} opened!')">
+        <div class="app-icon" style="background:${app.color};width:50px;height:50px;border-radius:14px;font-size:1.4rem;margin-bottom:10px;">${app.icon}</div>
+        <div class="app-name" style="font-size:0.85rem;">${app.name}</div>
+        <div class="app-category">${app.cat}</div>
+        <button class="app-install-btn" style="margin-top:10px;" onclick="event.stopPropagation();showToast('⬇️ ${app.name} installing...')">Install</button>
+      </div>
+    `).join('');
+  }
+
+  // ===== INTERACTIONS =====
+  function installApp(id, btn) {
+    if (installed.has(id)) return;
+    installed.add(id);
+    btn.textContent = '✓ Installed';
+    btn.classList.add('installed');
+    const app = apps.find(a => a.id === id);
+    showToast(`✅ ${app.name} installed!`);
+  }
+
+  function filterCategory(cat, el) {
+    document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    const filtered = cat === 'All' ? apps : apps.filter(a => a.cat === cat);
+    renderApps(filtered);
+  }
+
+  function filterApps(query) {
+    const q = query.toLowerCase();
+    const filtered = apps.filter(a => a.name.toLowerCase().includes(q) || a.cat.toLowerCase().includes(q));
+    renderApps(filtered);
+  }
+
+  function scrollToApps() {
+    document.getElementById('appsSection').scrollIntoView({ behavior:'smooth' });
+  }
+
+  // ===== MODAL =====
+  function openModal(app) {
+    if (!app) return;
+    currentApp = app;
+    document.getElementById('mIcon').style.background = app.color;
+    document.getElementById('mIcon').textContent = app.icon;
+    document.getElementById('mName').textContent = app.name;
+    document.getElementById('mCat').textContent = app.cat;
+    document.getElementById('mRating').textContent = '★ ' + app.rating;
+    document.getElementById('mDownloads').textContent = app.downloads;
+    document.getElementById('mSize').textContent = app.size;
+    document.getElementById('mAge').textContent = app.age;
+    document.getElementById('mDesc').textContent = app.desc;
+    const btn = document.getElementById('mInstallBtn');
+    if (installed.has(app.id)) {
+      btn.textContent = '✓ Installed';
+      btn.classList.add('installed');
+    } else {
+      btn.textContent = 'Install';
+      btn.classList.remove('installed');
+    }
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+
+  function closeModal(e) {
+    if (e.target === document.getElementById('modalOverlay')) closeModalBtn();
+  }
+  function closeModalBtn() {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+
+  function installFromModal() {
+    if (!currentApp || installed.has(currentApp.id)) return;
+    installed.add(currentApp.id);
+    const btn = document.getElementById('mInstallBtn');
+    btn.textContent = '✓ Installed';
+    btn.classList.add('installed');
+    showToast(`✅ ${currentApp.name} installed!`);
+    renderApps(apps);
+  }
+
+  // ===== TOAST =====
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  // ===== INIT =====
+  renderApps(apps);
+  renderTopList();
+  renderEditors();
+  renderNewArrivals();
+</script>
+</body>
+</html>
